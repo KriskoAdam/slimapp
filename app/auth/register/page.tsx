@@ -30,18 +30,22 @@ export default function RegisterPage() {
   const [goalWeight, setGoalWeight] = useState('')
 
   const handleRegister = async () => {
-    setLoading(true)
-    setError('')
+  setLoading(true)
+  setError('')
 
-    const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
-    if (signUpError || !data.user) {
-      setError(signUpError?.message || 'Chyba pri registrácii.')
-      setLoading(false)
-      return
-    }
+  // 1. Registrácia
+  const { data, error: signUpError } = await supabase.auth.signUp({ email, password })
+  if (signUpError || !data.user) {
+    setError(signUpError?.message || 'Chyba pri registrácii.')
+    setLoading(false)
+    return
+  }
 
-    const { error: profileError } = await supabase.from('profiles').insert({
-      id: data.user.id,
+  // 2. AKTUALIZÁCIA (namiesto insert)
+  // Keďže trigger vytvoril prázdny profil, my ho teraz len doplníme údajmi
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({
       full_name: fullName,
       height_cm: parseInt(heightCm),
       birth_date: birthDate,
@@ -51,15 +55,16 @@ export default function RegisterPage() {
       goal_weight_kg: parseFloat(goalWeight),
       last_weigh_in: new Date().toISOString().split('T')[0],
     })
+    .eq('id', data.user.id) // TOTO je kritická zmena
 
-    if (profileError) {
-      setError('Profil sa nepodarilo vytvoriť: ' + profileError.message)
-      setLoading(false)
-      return
-    }
-
-    router.push('/dashboard')
+  if (profileError) {
+    setError('Profil sa nepodarilo aktualizovať: ' + profileError.message)
+    setLoading(false)
+    return
   }
+
+  router.push('/dashboard')
+}
 
   const stepLabels = { account: 1, body: 2, goal: 3 }
   const currentStep = stepLabels[step]
