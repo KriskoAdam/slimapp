@@ -2,8 +2,8 @@
   "name": "SlimApp – Chudnem každý deň",
   "short_name": "SlimApp",
   "description": "Motivačná appka na chudnutie s dennými kalóriami a sledovaním váhy",
-  "start_url": "/dashboard",
-  "display": "standalone",
+  "start_url": "https://www.weightlossmotivationwebapp.store/auth/login",
+  "display": "fullscreen",
   "background_color": "#0a0a0a",
   "theme_color": "#0a0a0a",
   "orientation": "portrait",
@@ -20,5 +20,7 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "dir": "auto",
+  "lang": "sk"
 }
